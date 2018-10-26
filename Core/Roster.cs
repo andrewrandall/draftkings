@@ -194,12 +194,12 @@ namespace DraftKings
 
         public IEnumerator<Player> GetEnumerator()
         {
-            return players.GetEnumerator();
+            return players.OrderByDescending(p => p.Projection).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return players.GetEnumerator();
+            return players.OrderByDescending(p => p.Projection).GetEnumerator();
         }
 
         public Roster Clone()

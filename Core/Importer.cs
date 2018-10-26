@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -52,6 +53,8 @@ namespace DraftKings
                 }
             }
 
+            var x = players.Where(p => p.Salary == 0).ToArray();
+
             return players.Where(p => p.Salary > 0 && p.Projection > 0 && p.Position != "K").ToArray();
         }
 
@@ -92,11 +95,16 @@ namespace DraftKings
             var parts = line.Split(',').Select(s => s.Trim('"').Trim()).ToArray();
             var pos = parts[0];
             var name = parts[2];
+            var team = parts[7];
             var salary = double.Parse(parts[5]);
-
+            
             if (pos == "DST")
             {
-                var hits = players.Where(p => (p.Name.Contains(name) || name.Contains(p.Name)) && p.Position == pos).ToArray();
+                var hits = players.Where(p => 
+                    (p.Name.Contains(name) || name.Contains(p.Name)) 
+                    && p.Position == pos)
+                    .ToArray();
+
                 if (hits.Length == 1)
                 {
                     hits[0].Salary = salary;
@@ -109,7 +117,7 @@ namespace DraftKings
             else
             {
                 var hits = players
-                   .Where(p => p.Position == pos)
+                   .Where(p => p.Position == pos && p.Team == team)
                    .Select(p =>
                        new
                        {
@@ -119,7 +127,16 @@ namespace DraftKings
                    .OrderBy(x => x.Distance)
                    .ToArray();
 
-                 hits.First().Player.Salary = salary;
+                var best = hits.First();
+
+                if (best.Distance > 5)
+                {
+                    unks.Add(line);
+                }
+                else
+                {
+                    best.Player.Salary = salary;
+                }
             }
 
             //if (hits.First().Distance > 3)

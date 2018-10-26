@@ -10,18 +10,22 @@ namespace DraftKings
     {
         public IEnumerable<Roster> Run(IEnumerable<Player> players)
         {
+            var alreadyPlayed = new[] { "MIA", "HOU" };
+
+            players = players.Where(p => !alreadyPlayed.Contains(p.Team)).ToArray();
+
             var orderedPlayers = players.GroupBy(p => p.Position)
                 .ToDictionary(p => p.Key, g => g.OrderByDescending(p => p.Projection).ToArray());
 
-            var roster = new Roster();
-            roster.Add(orderedPlayers["QB"].First());
-            roster.Add(orderedPlayers["RB"].Skip(1).First());
-            roster.Add(orderedPlayers["RB"].Skip(2).First());
-            roster.Add(orderedPlayers["WR"].Skip(1).First());
-            roster.Add(orderedPlayers["WR"].Skip(2).First());
-            roster.Add(orderedPlayers["WR"].Skip(3).First());
-            roster.Add(orderedPlayers["TE"].First());
-            roster.Add(orderedPlayers["DST"].First());
+            var perfectRoster = new Roster();
+            perfectRoster.Add(orderedPlayers["QB"].First());
+            perfectRoster.Add(orderedPlayers["RB"].Skip(1).First());
+            perfectRoster.Add(orderedPlayers["RB"].Skip(2).First());
+            perfectRoster.Add(orderedPlayers["WR"].Skip(1).First());
+            perfectRoster.Add(orderedPlayers["WR"].Skip(2).First());
+            perfectRoster.Add(orderedPlayers["WR"].Skip(3).First());
+            perfectRoster.Add(orderedPlayers["TE"].First());
+            perfectRoster.Add(orderedPlayers["DST"].First());
 
             var flexOptions =
                 orderedPlayers["RB"].Union(orderedPlayers["WR"]).Union(orderedPlayers["TE"])
@@ -29,53 +33,78 @@ namespace DraftKings
 
             foreach (var flex in flexOptions)
             {
-                if (roster.CanAdd(flex))
+                if (perfectRoster.CanAdd(flex))
                 {
-                    roster.Add(flex);
+                    perfectRoster.Add(flex);
                     break;
                 }
             }
 
+            var roster = perfectRoster.Clone();
             var skips = new List<Player>();
             var irreplaceablePositions = new List<string>();
 
             double goal = 50000;
 
-            for (int i = 0; i < 5; i++)
+            foreach (var index in Enumerable.Range(0, 5))
             {
-                while (roster.Salary > goal)
+                foreach (var index2 in Enumerable.Range(0, 5))
                 {
-                    var leastEfficentOnRoster = roster
-                        .Where(p => !irreplaceablePositions.Contains(p.Position))
-                        .OrderBy(p => p.PointPerCost)
-                        .First();
+                    bool impossible = false;
 
-                    var newPlayer = players
-                        .Where(p => p.Position == leastEfficentOnRoster.Position)
-                        .Where(p => p.Salary < leastEfficentOnRoster.Salary)
-                        .Except(skips)
-                        .OrderByDescending(p => p.Projection)
-                        .FirstOrDefault();
-
-                    if (newPlayer == null)
+                    while (roster.Salary > goal || !roster.IsFull)
                     {
-                        irreplaceablePositions.Add(leastEfficentOnRoster.Position);
+                        if (irreplaceablePositions.Count == 5)
+                        {
+                            impossible = true;
+                            break;
+                        }
+
+                        var leastEfficentOnRoster = roster
+                            .Where(p => !irreplaceablePositions.Contains(p.Position))
+                            .OrderBy(p => p.PointPerCost)
+                            .First();
+
+                        var newPlayer = players
+                            .Where(p => p.Position == leastEfficentOnRoster.Position)
+                            .Where(p => p.Salary < leastEfficentOnRoster.Salary)
+                            .Except(skips)
+                            .OrderByDescending(p => p.Projection)
+                            .FirstOrDefault();
+
+                        if (newPlayer == null)
+                        {
+                            irreplaceablePositions.Add(leastEfficentOnRoster.Position);
+                        }
+                        else if (roster.Contains(newPlayer))
+                        {
+                            skips.Add(newPlayer);
+                        }
+                        else
+                        {
+                            roster.Remove(leastEfficentOnRoster);
+                            roster.Add(newPlayer);
+                        }
                     }
-                    else if (roster.Contains(newPlayer))
+
+                    if (!impossible)
                     {
-                        skips.Add(newPlayer);
+                        yield return roster;
                     }
                     else
                     {
-                        roster.Remove(leastEfficentOnRoster);
-                        roster.Add(newPlayer);
+                        break;
                     }
+
+                    roster = roster.Clone();
+                    goal = roster.Salary - 1;
                 }
 
-                yield return roster;
-
-                roster = roster.Clone();
-                goal = roster.Salary - 1;
+                skips = new List<Player>();
+                irreplaceablePositions = new List<string>();
+                goal = 50000;
+                roster = perfectRoster.Clone();
+                roster.Remove(roster.OrderByDescending(p => p.Salary).First());
             }
         }
 

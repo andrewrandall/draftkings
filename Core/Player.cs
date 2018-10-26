@@ -26,7 +26,7 @@ namespace DraftKings
 
         public override string ToString()
         {
-            return $"{Position} - {Name} - {Projection} for ${Salary}";
+            return $"{Position} - {Name} - {Team} - {Projection} for ${Salary}";
         }
 
         public override bool Equals(object obj)

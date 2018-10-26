@@ -6,6 +6,11 @@
         xmlns:local="clr-namespace:DraftKings"
         mc:Ignorable="d"
         Title="Big Money no Whammies!!!" Height="450" Width="800">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="3" />
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -16,17 +21,20 @@
             <ItemsControl x:Name="items" >
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
+                        <UniformGrid />
+                        <!--<StackPanel Orientation="Horizontal"/>-->
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Projection}" />
-                            <TextBlock Text="{Binding Salary}" />
-                            <ItemsControl ItemsSource="{Binding}">
-                            </ItemsControl>
-                        </StackPanel>
+                        <Border Margin="3" BorderBrush="SlateGray" BorderThickness="1" >
+                            <StackPanel >
+                                <TextBlock Text="{Binding Projection}" />
+                                <TextBlock Text="{Binding Salary}" />
+                                <ItemsControl ItemsSource="{Binding}">
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
