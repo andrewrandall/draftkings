@@ -10,10 +10,6 @@ namespace DraftKings
     {
         public Roster Run(IEnumerable<Player> players)
         {
-            var alreadyPlayed = new[] { "MIA", "HOU", };// "NO", "MIN", "BOS", "BUF" };
-
-            players = players.Where(p => !alreadyPlayed.Contains(p.Team)).ToArray();
-
             var orderedPlayers = players.GroupBy(p => p.Position)
                 .ToDictionary(p => p.Key, g => g.OrderByDescending(p => p.Projection).ToArray());
 

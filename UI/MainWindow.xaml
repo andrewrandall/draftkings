@@ -23,7 +23,7 @@
                     <ItemsControl x:Name="items" >
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid />
+                                <UniformGrid Columns="6" />
                                 <!--<StackPanel Orientation="Horizontal"/>-->
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>

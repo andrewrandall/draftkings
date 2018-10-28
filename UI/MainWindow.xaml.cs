@@ -28,6 +28,11 @@ namespace DraftKings
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var players = new Importer().Run();
+
+            var alreadyPlayed = new[] { "MIA", "HOU", };// "NO", "MIN", "BOS", "BUF" };
+            //var alreadyPlayed = new[] { "MIA", "HOU", "NO", "MIN", "BOS", "BUF" };
+            players = players.Where(p => !alreadyPlayed.Contains(p.Team)).ToArray();
+
             var byPos = players.GroupBy(p => p.Position);
             foreach (var group in byPos)
             {
@@ -55,13 +60,10 @@ namespace DraftKings
                 }
             }
 
-            //var r1 = new InchBackByEfficiency().Run(players);
-            //var r2 = new InchBackByCost().Run(players);
-
             var rosters = new List<Roster>();
             rosters.Add(new InchBackByEfficiency2().Run(players));
             rosters.AddRange(new RosterVarier().Vary(rosters.First(), players));
-            items.ItemsSource = rosters.OrderByDescending(r => r.Projection).ToArray();
+            items.ItemsSource = rosters.Distinct().OrderByDescending(r => r.Projection).ToArray();
         }
     }
 }

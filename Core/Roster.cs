@@ -218,5 +218,36 @@ namespace DraftKings
                 dst = dst
             };
         }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Roster))
+                return false;
+
+            var other = (Roster)obj;
+
+            if (this.Except(other).Any())
+                return false;
+
+            if (other.Except(this).Any())
+                return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -52375223;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(qb);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(rb1);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(rb2);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(wr1);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(wr2);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(wr3);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(te);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(flex);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(dst);
+            return hashCode;
+        }
     }
 }
