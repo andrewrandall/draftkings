@@ -63,6 +63,27 @@ namespace DraftKings
             var rosters = new List<Roster>();
             rosters.Add(new InchBackByEfficiency2().Run(players));
             rosters.AddRange(new RosterVarier().Vary(rosters.First(), players));
+
+            mostPickedRosters.ItemsSource = rosters
+                .GroupBy(r => r)
+                .Select(g => 
+                    new
+                    {
+                        Count = g.Count(),
+                        Roster = g.Key
+                    })
+                .OrderByDescending(g => g.Count)
+                .ToArray();
+
+            pickGrid.ItemsSource =
+                rosters.SelectMany(r => r).GroupBy(p => p).Select(g =>
+                    new
+                    {
+                        Count = g.Count(),
+                        Player = g.Key
+                    })
+                    .OrderByDescending(x => x.Count);
+
             items.ItemsSource = rosters.Distinct().OrderByDescending(r => r.Projection).ToArray();
         }
     }

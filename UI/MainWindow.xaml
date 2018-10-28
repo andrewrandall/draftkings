@@ -57,6 +57,34 @@
             <TabItem Header="DST">
                 <DataGrid x:Name="dstGrid" />
             </TabItem>
+            <TabItem Header="Most Picked Roster">
+                <ScrollViewer>
+                    <ItemsControl x:Name="mostPickedRosters" >
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="6" />
+                                <!--<StackPanel Orientation="Horizontal"/>-->
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="3" BorderBrush="SlateGray" BorderThickness="1" >
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding Count}" />
+                                        <TextBlock Text="{Binding Roster.Projection}" />
+                                        <TextBlock Text="{Binding Roster.Salary}" />
+                                        <ItemsControl ItemsSource="{Binding Roster}">
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Most Picked Players">
+                <DataGrid x:Name="pickGrid" />
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>
