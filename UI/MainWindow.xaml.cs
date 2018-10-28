@@ -75,14 +75,17 @@ namespace DraftKings
                 .OrderByDescending(g => g.Count)
                 .ToArray();
 
-            pickGrid.ItemsSource =
-                rosters.SelectMany(r => r).GroupBy(p => p).Select(g =>
+            var mostPickedPlayers = rosters.SelectMany(r => r).GroupBy(p => p).Select(g =>
                     new
                     {
                         Count = g.Count(),
                         Player = g.Key
                     })
                     .OrderByDescending(x => x.Count);
+
+            pickGrid.ItemsSource = mostPickedPlayers;
+
+            rosters.AddRange(new PlayerPermutator().Permutations(mostPickedPlayers.Select(x => x.Player).ToArray()));
 
             var distinctRosters = rosters.Distinct().OrderByDescending(r => r.Projection).ToArray();
             items.ItemsSource = distinctRosters;
