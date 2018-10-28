@@ -16,7 +16,12 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button Click="Button_Click" Grid.Row="0" Content="run" HorizontalAlignment="Left" Margin="10" />
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <Button VerticalAlignment="Center" Click="Button_Click" Content="run" Margin="10" />
+            <TextBlock VerticalAlignment="Center">Rosters: </TextBlock>
+            <TextBlock VerticalAlignment="Center" x:Name="rosterCount" />
+        </StackPanel>
+        
         <TabControl Grid.Row="1">
             <TabItem Header="Rosters">
                 <ScrollViewer>

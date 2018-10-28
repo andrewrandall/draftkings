@@ -84,7 +84,10 @@ namespace DraftKings
                     })
                     .OrderByDescending(x => x.Count);
 
-            items.ItemsSource = rosters.Distinct().OrderByDescending(r => r.Projection).ToArray();
+            var distinctRosters = rosters.Distinct().OrderByDescending(r => r.Projection).ToArray();
+            items.ItemsSource = distinctRosters;
+
+            rosterCount.Text = distinctRosters.Length.ToString();
         }
     }
 }
