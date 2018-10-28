@@ -16,28 +16,47 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button Click="Button_Click" Grid.Row="0" Content="run" />
-        <ScrollViewer Grid.Row="1">
-            <ItemsControl x:Name="items" >
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid />
-                        <!--<StackPanel Orientation="Horizontal"/>-->
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="3" BorderBrush="SlateGray" BorderThickness="1" >
-                            <StackPanel >
-                                <TextBlock Text="{Binding Projection}" />
-                                <TextBlock Text="{Binding Salary}" />
-                                <ItemsControl ItemsSource="{Binding}">
-                                </ItemsControl>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        <Button Click="Button_Click" Grid.Row="0" Content="run" HorizontalAlignment="Left" Margin="10" />
+        <TabControl Grid.Row="1">
+            <TabItem Header="Rosters">
+                <ScrollViewer>
+                    <ItemsControl x:Name="items" >
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid />
+                                <!--<StackPanel Orientation="Horizontal"/>-->
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="3" BorderBrush="SlateGray" BorderThickness="1" >
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding Projection}" />
+                                        <TextBlock Text="{Binding Salary}" />
+                                        <ItemsControl ItemsSource="{Binding}">
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="QB">
+                <DataGrid x:Name="qbGrid" />
+            </TabItem>
+            <TabItem Header="RB">
+                <DataGrid x:Name="rbGrid" />
+            </TabItem>
+            <TabItem Header="WR">
+                <DataGrid x:Name="wrGrid" />
+            </TabItem>
+            <TabItem Header="TE">
+                <DataGrid x:Name="teGrid" />
+            </TabItem>
+            <TabItem Header="DST">
+                <DataGrid x:Name="dstGrid" />
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

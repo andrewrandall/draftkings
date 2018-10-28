@@ -10,7 +10,7 @@ namespace DraftKings
     {
         public IEnumerable<Roster> Run(IEnumerable<Player> players)
         {
-            var alreadyPlayed = new[] { "MIA", "HOU" };
+            var alreadyPlayed = new[] { "MIA", "HOU", };// "NO", "MIN", "BOS", "BUF" };
 
             players = players.Where(p => !alreadyPlayed.Contains(p.Team)).ToArray();
 

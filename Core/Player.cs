@@ -15,6 +15,9 @@ namespace DraftKings
         public string Team { get; set; }
         public double Projection { get; set; }
         public double Salary { get; set; }
+        public string Matchup { get; set; }
+
+        public StatCollection Stats { get; set; }
 
         public double PointPerCost
         {

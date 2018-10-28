@@ -28,6 +28,33 @@ namespace DraftKings
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var players = new Importer().Run();
+            var byPos = players.GroupBy(p => p.Position);
+            foreach (var group in byPos)
+            {
+                switch (group.Key)
+                {
+                    case "QB":
+                        qbGrid.ItemsSource = group.ToArray();
+                        break;
+
+                    case "RB":
+                        rbGrid.ItemsSource = group.ToArray();
+                        break;
+
+                    case "WR":
+                        wrGrid.ItemsSource = group.ToArray();
+                        break;
+
+                    case "TE":
+                        teGrid.ItemsSource = group.ToArray();
+                        break;
+
+                    case "DST":
+                        dstGrid.ItemsSource = group.ToArray();
+                        break;
+                }
+            }
+            
             //var r1 = new InchBackByEfficiency().Run(players);
             //var r2 = new InchBackByCost().Run(players);
             items.ItemsSource = new InchBackByEfficiency2().Run(players);

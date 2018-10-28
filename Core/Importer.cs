@@ -66,27 +66,73 @@ namespace DraftKings
             if (parts.All(p => string.IsNullOrWhiteSpace(p)))
                 return;
 
-            if (position == "DST")
+            var player = new Player()
             {
-                var player = new Player
-                {
-                    Name = parts[0],
-                    Position = "DST",
-                    Projection = double.Parse(parts.Last()),
-                    Team = parts[1]
-                };
-                players.Add(player);
-            }
-            else
+                Name = parts[0],
+                Projection = double.Parse(parts.Last()),
+                Team = parts[1]
+            };
+            players.Add(player);
+
+            var statMaps = new Dictionary<string, IEnumerable<Tuple<int, StatCategory>>>()
             {
-                var player = new Player
                 {
-                    Name = parts[0],
-                    Position = position,
-                    Projection = double.Parse(parts.Last()),
-                    Team = parts[1]
-                };
-                players.Add(player);
+                    "QB",
+                    new[]
+                    {
+                        Tuple.Create(4, StatCategory.PassYards),
+                        Tuple.Create(5, StatCategory.PassTds),
+                        Tuple.Create(6, StatCategory.PassInts),
+                        Tuple.Create(8, StatCategory.RushYards),
+                        Tuple.Create(9, StatCategory.RushTds),
+                    }
+                },
+                {
+                    "RB",
+                    new[]
+                    {
+                        Tuple.Create(3, StatCategory.RushYards),
+                        Tuple.Create(4, StatCategory.RushTds),
+                        Tuple.Create(5, StatCategory.Rec),
+                        Tuple.Create(6, StatCategory.RecYards),
+                        Tuple.Create(7, StatCategory.RecTds),
+                    }
+                },
+                {
+                    "WR",
+                    new[]
+                    {
+                        Tuple.Create(2, StatCategory.Rec),
+                        Tuple.Create(3, StatCategory.RecYards),
+                        Tuple.Create(4, StatCategory.RecTds),
+                        Tuple.Create(6, StatCategory.RushYards),
+                        Tuple.Create(7, StatCategory.RushTds),
+                    }
+                },
+                {
+                    "TE",
+                    new[]
+                    {
+                        Tuple.Create(2, StatCategory.Rec),
+                        Tuple.Create(3, StatCategory.RecYards),
+                        Tuple.Create(4, StatCategory.RecTds),
+                    }
+                }
+            };
+
+            switch(position)
+            {
+                case "DST":
+                    player.Position = "DST";
+                    break;
+
+                case "QB":
+                case "RB":
+                case "WR":
+                case "TE":
+                    player.Position = position;
+                    player.Stats = new StatCollection( statMaps[position].Select(m => new Stat { Category = m.Item2, Projection = double.Parse(parts[m.Item1]) }).ToArray());
+                    break;
             }
         }
 
@@ -95,6 +141,7 @@ namespace DraftKings
             var parts = line.Split(',').Select(s => s.Trim('"').Trim()).ToArray();
             var pos = parts[0];
             var name = parts[2];
+            var matchup = parts[6];
             var team = parts[7];
             var salary = double.Parse(parts[5]);
             
@@ -108,6 +155,7 @@ namespace DraftKings
                 if (hits.Length == 1)
                 {
                     hits[0].Salary = salary;
+                    hits[0].Matchup = matchup;
                 }
                 else
                 {
@@ -136,6 +184,7 @@ namespace DraftKings
                 else
                 {
                     best.Player.Salary = salary;
+                    hits[0].Player.Matchup = matchup;
                 }
             }
 
