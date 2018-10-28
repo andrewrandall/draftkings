@@ -54,10 +54,14 @@ namespace DraftKings
                         break;
                 }
             }
-            
+
             //var r1 = new InchBackByEfficiency().Run(players);
             //var r2 = new InchBackByCost().Run(players);
-            items.ItemsSource = new InchBackByEfficiency2().Run(players);
+
+            var rosters = new List<Roster>();
+            rosters.Add(new InchBackByEfficiency2().Run(players));
+            rosters.AddRange(new RosterVarier().Vary(rosters.First(), players));
+            items.ItemsSource = rosters.OrderByDescending(r => r.Projection).ToArray();
         }
     }
 }

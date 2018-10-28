@@ -8,7 +8,7 @@ namespace DraftKings
 {
     public class InchBackByEfficiency2
     {
-        public IEnumerable<Roster> Run(IEnumerable<Player> players)
+        public Roster Run(IEnumerable<Player> players)
         {
             var alreadyPlayed = new[] { "MIA", "HOU", };// "NO", "MIN", "BOS", "BUF" };
 
@@ -46,66 +46,36 @@ namespace DraftKings
 
             double goal = 50000;
 
-            foreach (var index in Enumerable.Range(0, 5))
+            while (roster.Salary > goal)
             {
-                foreach (var index2 in Enumerable.Range(0, 5))
+                var leastEfficentOnRoster = roster
+                    .Where(p => !irreplaceablePositions.Contains(p.Position))
+                    .OrderBy(p => p.PointPerCost)
+                    .First();
+
+                var newPlayer = players
+                    .Where(p => p.Position == leastEfficentOnRoster.Position)
+                    .Where(p => p.Salary < leastEfficentOnRoster.Salary)
+                    .Except(skips)
+                    .OrderByDescending(p => p.Projection)
+                    .FirstOrDefault();
+
+                if (newPlayer == null)
                 {
-                    bool impossible = false;
-
-                    while (roster.Salary > goal || !roster.IsFull)
-                    {
-                        if (irreplaceablePositions.Count == 5)
-                        {
-                            impossible = true;
-                            break;
-                        }
-
-                        var leastEfficentOnRoster = roster
-                            .Where(p => !irreplaceablePositions.Contains(p.Position))
-                            .OrderBy(p => p.PointPerCost)
-                            .First();
-
-                        var newPlayer = players
-                            .Where(p => p.Position == leastEfficentOnRoster.Position)
-                            .Where(p => p.Salary < leastEfficentOnRoster.Salary)
-                            .Except(skips)
-                            .OrderByDescending(p => p.Projection)
-                            .FirstOrDefault();
-
-                        if (newPlayer == null)
-                        {
-                            irreplaceablePositions.Add(leastEfficentOnRoster.Position);
-                        }
-                        else if (roster.Contains(newPlayer))
-                        {
-                            skips.Add(newPlayer);
-                        }
-                        else
-                        {
-                            roster.Remove(leastEfficentOnRoster);
-                            roster.Add(newPlayer);
-                        }
-                    }
-
-                    if (!impossible)
-                    {
-                        yield return roster;
-                    }
-                    else
-                    {
-                        break;
-                    }
-
-                    roster = roster.Clone();
-                    goal = roster.Salary - 1;
+                    irreplaceablePositions.Add(leastEfficentOnRoster.Position);
                 }
-
-                skips = new List<Player>();
-                irreplaceablePositions = new List<string>();
-                goal = 50000;
-                roster = perfectRoster.Clone();
-                roster.Remove(roster.OrderByDescending(p => p.Salary).First());
+                else if (roster.Contains(newPlayer))
+                {
+                    skips.Add(newPlayer);
+                }
+                else
+                {
+                    roster.Remove(leastEfficentOnRoster);
+                    roster.Add(newPlayer);
+                }
             }
+
+            return roster;
         }
 
         private static double Percentile(IEnumerable<Player> players, double percentile)
