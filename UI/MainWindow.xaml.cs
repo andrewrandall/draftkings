@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -79,18 +80,50 @@ namespace DraftKings
                     new
                     {
                         Count = g.Count(),
+                        g.Key.Position,
+                        g.Key.Name,
+                        g.Key.Team,
+                        g.Key.Projection,
+                        g.Key.Salary,
+                        g.Key.Matchup,
+                        g.Key.PointPerCost,
                         Player = g.Key
                     })
                     .OrderByDescending(x => x.Count);
 
             pickGrid.ItemsSource = mostPickedPlayers;
 
-            rosters.AddRange(new PlayerPermutator().Permutations(mostPickedPlayers.Select(x => x.Player).ToArray()));
+            var permutator = new PlayerPermutator();
 
-            var distinctRosters = rosters.Distinct().OrderByDescending(r => r.Projection).ToArray();
-            items.ItemsSource = distinctRosters;
+            Task.Run(() =>
+            {
+                //var top = players
+                //    .GroupBy(p => p.Position)
+                //    .Select(g =>
+                //        g.OrderByDescending(p => p.Projection).First())
+                //    .ToDictionary(p => p.Position, p => p);
 
-            rosterCount.Text = distinctRosters.Length.ToString();
+                //var options = players.Where(p => (p.Projection / top[p.Position].Projection) >= .75d).ToArray();
+
+                permutator.Progress += Permutator_Progress;
+                var pr = permutator.Permutations(mostPickedPlayers.Select(p => p.Player).ToArray());
+                rosters.AddRange(pr);
+            }).ContinueWith(_ =>
+            {
+                var distinctRosters = rosters.Distinct().OrderByDescending(r => r.Projection).ToArray();
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    progress.Text = "Done";
+                    items.ItemsSource = distinctRosters.OrderByDescending(r => r.Projection);
+                    rosterCount.Text = distinctRosters.Length.ToString();
+                });
+            });
+        }
+
+        private void Permutator_Progress(object sender, double e)
+        {
+            Application.Current.Dispatcher.Invoke(() => progress.Text = e.ToString());
         }
     }
 }

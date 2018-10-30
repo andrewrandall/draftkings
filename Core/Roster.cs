@@ -106,6 +106,8 @@ namespace DraftKings
                 default:
                     throw new ArgumentException("player position");
             }
+
+            RecalcHashCode();
         }
 
         public double Salary
@@ -190,6 +192,8 @@ namespace DraftKings
                 default:
                     throw new ArgumentException("player position");
             }
+
+            RecalcHashCode();
         }
 
         public IEnumerator<Player> GetEnumerator()
@@ -235,19 +239,20 @@ namespace DraftKings
             return true;
         }
 
+        private int hashCode = -52375223;
+
         public override int GetHashCode()
         {
-            var hashCode = -52375223;
-            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(qb);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(rb1);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(rb2);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(wr1);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(wr2);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(wr3);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(te);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(flex);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(dst);
             return hashCode;
+        }
+
+        private void RecalcHashCode()
+        {
+            hashCode = -52375223;
+            foreach (var player in players.OrderBy(p => p.GetHashCode()))
+            {
+                hashCode = hashCode * -1521134295 + player.GetHashCode();
+            }
         }
     }
 }

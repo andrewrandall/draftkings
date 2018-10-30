@@ -8,10 +8,29 @@ namespace DraftKings
 {
     public class PlayerPermutator
     {
+        public event EventHandler<double> Progress;
+
         public IEnumerable<Roster> Permutations(IEnumerable<Player> players)
         {
-            var byPos = players.GroupBy(p => p.Position)
-                .ToDictionary(g => g.Key, g => g);
+            var byPos = players
+                .GroupBy(p => p.Position)
+                .ToDictionary(
+                    g => g.Key,
+                    g =>
+                    {
+                        if (new[] { "QB" }.Contains(g.Key))
+                        {
+                            return g.ToArray();
+                        }
+                        else if (g.Key == "DST")
+                        {
+                            return g.OrderByDescending(p => p.Projection).Take(3).ToArray();
+                        }
+                        else
+                        {
+                            return g.Where(p => p.Projection > 10d).ToArray();
+                        }
+                    });
 
             var flexes = byPos["RB"].Concat(byPos["WR"]).Concat(byPos["TE"]).ToArray();
 
@@ -19,9 +38,13 @@ namespace DraftKings
             int limit = 20;
             Roster lowest = new Roster();
 
+            //int stop = 10000;
+            double index = 0;
+            double count = flexes.Length * byPos["QB"].Length * byPos["TE"].Length * byPos["DST"].Length * byPos["RB"].Length * byPos["RB"].Length * byPos["WR"].Length * byPos["WR"].Length * byPos["WR"].Length;
+
             foreach (var qb in byPos["QB"])
             {
-                foreach (var te in byPos["TE"])
+                foreach (var te in byPos["TE"].ToArray())
                 {
                     foreach (var flex in flexes)
                     {
@@ -31,14 +54,24 @@ namespace DraftKings
                             var wrs = byPos["WR"].ToArray();
                             for (int iRb1 = 0; iRb1 < rbs.Length; iRb1++)
                             {
-                                for (int iRb2 = iRb1 + 1; iRb2 < rbs.Length; iRb2++)
+                                for (int iRb2 = iRb1; iRb2 < rbs.Length; iRb2++)
                                 {
                                     for (int iWr1 = 0; iWr1 < wrs.Length; iWr1++)
                                     {
-                                        for (int iWr2 = iWr1 + 1; iWr2 < wrs.Length; iWr2++)
+                                        for (int iWr2 = iWr1; iWr2 < wrs.Length; iWr2++)
                                         {
-                                            for (int iWr3 = iWr2 + 1; iWr3 < wrs.Length; iWr3++)
+                                            for (int iWr3 = iWr2; iWr3 < wrs.Length; iWr3++)
                                             {
+                                                ++index;
+
+                                                if (Progress != null && index % 100000 == 0)
+                                                {
+                                                    Progress(this, index / count);
+                                                }
+                                                
+                                                //if (index > stop)
+                                                //    return rosters;
+
                                                 var dupeChecker = new HashSet<Player>();
                                                 dupeChecker.Add(flex);
 
@@ -94,43 +127,3 @@ namespace DraftKings
         }
     }
 }
-
-
-//foreach (var rb1 in rbs)
-//                            {
-//                                foreach (var rb2 in rbs)
-//                                {
-//                                    foreach (var wr1 in wrs)
-//                                    {
-//                                        foreach (var wr2 in wrs)
-//                                        {
-//                                            foreach (var wr3 in wrs)
-//                                            {
-//                                                var dupeCheck = new[]
-//                                                {
-//                                                    flex, rb1, rb2, wr1, wr2, wr3
-//                                                }.GroupBy(x => x);
-
-//                                                if (dupeCheck.Any(x => x.Count() > 1))
-//                                                    continue;
-
-//                                                var roster = new Roster();
-//roster.Add(qb);
-//                                                roster.Add(te);
-//                                                roster.Add(flex);
-//                                                roster.Add(dst);
-//                                                roster.Add(rb1);
-//                                                roster.Add(rb2);
-//                                                roster.Add(wr1);
-//                                                roster.Add(wr2);
-//                                                roster.Add(wr3);
-
-//                                                if (roster.Salary > 50000)
-//                                                    continue;
-
-//                                                rosters.Add(roster);
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }

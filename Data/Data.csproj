@@ -50,5 +50,13 @@
     <EmbeddedResource Include="w8\FantasyPros_Fantasy_Football_Projections_TE.csv" />
     <EmbeddedResource Include="w8\FantasyPros_Fantasy_Football_Projections_WR.csv" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="w9\DKSalaries.csv" />
+    <EmbeddedResource Include="w9\FantasyPros_Fantasy_Football_Projections_DST.csv" />
+    <EmbeddedResource Include="w9\FantasyPros_Fantasy_Football_Projections_QB.csv" />
+    <EmbeddedResource Include="w9\FantasyPros_Fantasy_Football_Projections_RB.csv" />
+    <EmbeddedResource Include="w9\FantasyPros_Fantasy_Football_Projections_TE.csv" />
+    <EmbeddedResource Include="w9\FantasyPros_Fantasy_Football_Projections_WR.csv" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

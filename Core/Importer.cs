@@ -23,20 +23,23 @@ namespace DraftKings
             string salaryRes = string.Empty;
             foreach (var res in reses)
             {
-                if (res.Contains("DKSalaries"))
+                if (res.Contains("w9"))
                 {
-                    salaryRes = res;
-                }
-                else
-                {
-                    using (var stream = ass.GetManifestResourceStream(res))
-                    using (var reader = new StreamReader(stream))
+                    if (res.Contains("DKSalaries"))
                     {
-                        reader.ReadLine(); // skip 1
-                        while (!reader.EndOfStream)
+                        salaryRes = res;
+                    }
+                    else
+                    {
+                        using (var stream = ass.GetManifestResourceStream(res))
+                        using (var reader = new StreamReader(stream))
                         {
-                            var line = reader.ReadLine();
-                            ProcessPlayer(line, res);
+                            reader.ReadLine(); // skip 1
+                            while (!reader.EndOfStream)
+                            {
+                                var line = reader.ReadLine();
+                                ProcessPlayer(line, res);
+                            }
                         }
                     }
                 }
@@ -52,8 +55,6 @@ namespace DraftKings
                     ProcessSalary(line);
                 }
             }
-
-            var x = players.Where(p => p.Salary == 0).ToArray();
 
             return players.Where(p => p.Salary > 0 && p.Projection > 0 && p.Position != "K").ToArray();
         }

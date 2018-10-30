@@ -37,7 +37,9 @@ namespace DraftKings
             if (!(obj is Player))
                 return false;
 
-            return id == ((Player)obj).id;
+            return Position == ((Player)obj).Position
+                && Team == ((Player)obj).Team
+                && Name == ((Player)obj).Name;
         }
 
         public override int GetHashCode()
