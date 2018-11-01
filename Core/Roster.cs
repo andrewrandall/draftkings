@@ -126,6 +126,14 @@ namespace DraftKings
             }
         }
 
+        public double AveragePpg
+        {
+            get
+            {
+                return players.Sum(p => p.AveragePpg);
+            }
+        }
+
         public bool IsFull
         {
             get
@@ -221,6 +229,11 @@ namespace DraftKings
                 flex = flex,
                 dst = dst
             };
+        }
+
+        public string ToCsv()
+        {
+            return string.Join(",", new[] { qb.DKId, rb1.DKId, rb2.DKId, wr1.DKId, wr2.DKId, wr3.DKId, te.DKId, flex.DKId, dst.DKId });
         }
 
         public override bool Equals(object obj)

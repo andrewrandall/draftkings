@@ -144,7 +144,9 @@ namespace DraftKings
             var name = parts[2];
             var matchup = parts[6];
             var team = parts[7];
+            var dkId = int.Parse(parts[3]);
             var salary = double.Parse(parts[5]);
+            var averagePpg = double.Parse(parts[8]);
             
             if (pos == "DST")
             {
@@ -157,6 +159,8 @@ namespace DraftKings
                 {
                     hits[0].Salary = salary;
                     hits[0].Matchup = matchup;
+                    hits[0].DKId = dkId;
+                    hits[0].AveragePpg = averagePpg;
                 }
                 else
                 {
@@ -186,6 +190,8 @@ namespace DraftKings
                 {
                     best.Player.Salary = salary;
                     hits[0].Player.Matchup = matchup;
+                    hits[0].Player.DKId = dkId;
+                    hits[0].Player.AveragePpg = averagePpg;
                 }
             }
 

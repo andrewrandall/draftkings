@@ -16,6 +16,8 @@ namespace DraftKings
         public double Projection { get; set; }
         public double Salary { get; set; }
         public string Matchup { get; set; }
+        public int DKId { get; set; }
+        public double AveragePpg { get; set; }
 
         public StatCollection Stats { get; set; }
 
@@ -29,7 +31,7 @@ namespace DraftKings
 
         public override string ToString()
         {
-            return $"{Position} - {Name} - {Team} - {Projection} for ${Salary}";
+            return $"{Position} - {Name} - {Team} - {Projection} for ${Salary} - {AveragePpg}";
         }
 
         public override bool Equals(object obj)

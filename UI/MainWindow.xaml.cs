@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -124,6 +125,15 @@ namespace DraftKings
         private void Permutator_Progress(object sender, double e)
         {
             Application.Current.Dispatcher.Invoke(() => progress.Text = e.ToString());
+        }
+
+        private void Export_Click(object sender, RoutedEventArgs e)
+        {
+            var roster = (Roster)((Button)sender).DataContext;
+            var fileBuilder = new StringBuilder();
+            fileBuilder.AppendLine("QB,RB,RB,WR,WR,WR,TE,FLEX,DST");
+            fileBuilder.AppendLine(roster.ToCsv());
+            File.WriteAllText("roster.csv", fileBuilder.ToString());
         }
     }
 }

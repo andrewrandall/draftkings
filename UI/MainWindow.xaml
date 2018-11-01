@@ -40,8 +40,10 @@
                                     <StackPanel >
                                         <TextBlock Text="{Binding Projection}" />
                                         <TextBlock Text="{Binding Salary}" />
+                                        <TextBlock Text="{Binding AveragePpg}" />
                                         <ItemsControl ItemsSource="{Binding}">
                                         </ItemsControl>
+                                        <Button Click="Export_Click">Export</Button>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -80,6 +82,7 @@
                                         <TextBlock Text="{Binding Count}" />
                                         <TextBlock Text="{Binding Roster.Projection}" />
                                         <TextBlock Text="{Binding Roster.Salary}" />
+                                        <TextBlock Text="{Binding Roster.AveragePpg}" />
                                         <ItemsControl ItemsSource="{Binding Roster}">
                                         </ItemsControl>
                                     </StackPanel>
