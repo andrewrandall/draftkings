@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,7 +35,7 @@ namespace DraftKings
 
             var flexes = byPos["RB"].Concat(byPos["WR"]).Concat(byPos["TE"]).ToArray();
 
-            var rosters = new HashSet<Roster>();
+            var rosters = new ConcurrentDictionary<Roster, byte>();
             int limit = 20;
             Roster lowest = new Roster();
 
@@ -46,7 +47,7 @@ namespace DraftKings
             {
                 foreach (var te in byPos["TE"].ToArray())
                 {
-                    foreach (var flex in flexes)
+                    Parallel.ForEach(flexes, new ParallelOptions { MaxDegreeOfParallelism = 7 }, flex =>
                     {
                         foreach (var dst in byPos["DST"])
                         {
@@ -54,13 +55,13 @@ namespace DraftKings
                             var wrs = byPos["WR"].ToArray();
                             for (int iRb1 = 0; iRb1 < rbs.Length; iRb1++)
                             {
-                                for (int iRb2 = iRb1; iRb2 < rbs.Length; iRb2++)
+                                for (int iRb2 = 0; iRb2 < rbs.Length; iRb2++)
                                 {
                                     for (int iWr1 = 0; iWr1 < wrs.Length; iWr1++)
                                     {
-                                        for (int iWr2 = iWr1; iWr2 < wrs.Length; iWr2++)
+                                        for (int iWr2 = 0; iWr2 < wrs.Length; iWr2++)
                                         {
-                                            for (int iWr3 = iWr2; iWr3 < wrs.Length; iWr3++)
+                                            for (int iWr3 = 0; iWr3 < wrs.Length; iWr3++)
                                             {
                                                 ++index;
 
@@ -68,7 +69,7 @@ namespace DraftKings
                                                 {
                                                     Progress(this, index / count);
                                                 }
-                                                
+
                                                 //if (index > stop)
                                                 //    return rosters;
 
@@ -101,17 +102,17 @@ namespace DraftKings
 
                                                 if (rosters.Count < limit)
                                                 {
-                                                    rosters.Add(roster);
-                                                    lowest = rosters.OrderBy(r => r.Projection).First();
+                                                    rosters.TryAdd(roster, 0);
+                                                    lowest = rosters.Keys.OrderBy(r => r.Projection).First();
                                                 }
-                                                else if(roster.Projection > lowest.Projection)
+                                                else if (roster.Projection > lowest.Projection)
                                                 {
-                                                    rosters.Add(roster);
+                                                    rosters.TryAdd(roster, 0);
                                                     if (rosters.Count > limit)
                                                     {
-                                                        rosters.Remove(lowest);
+                                                        rosters.TryRemove(lowest, out byte z);
                                                     }
-                                                    lowest = rosters.OrderBy(r => r.Projection).First();
+                                                    lowest = rosters.Keys.OrderBy(r => r.Projection).First();
                                                 }
                                             }
                                         }
@@ -119,11 +120,11 @@ namespace DraftKings
                                 }
                             }
                         }
-                    }
+                    });
                 }
             }
 
-            return rosters;
+            return rosters.Keys;
         }
     }
 }

@@ -31,7 +31,8 @@ namespace DraftKings
         {
             var players = new Importer().Run();
 
-            var alreadyPlayed = new[] { "MIA", "HOU", };// "NO", "MIN", "BOS", "BUF" };
+            var alreadyPlayed = Enumerable.Empty<String>();
+            //var alreadyPlayed = new[] { "MIA", "HOU", };// "NO", "MIN", "BOS", "BUF" };
             //var alreadyPlayed = new[] { "MIA", "HOU", "NO", "MIN", "BOS", "BUF" };
             players = players.Where(p => !alreadyPlayed.Contains(p.Team)).ToArray();
 
