@@ -22,6 +22,9 @@
             <TextBlock VerticalAlignment="Center" x:Name="rosterCount" />
             <TextBlock VerticalAlignment="Center">Progress:</TextBlock>
             <TextBlock VerticalAlignment="Center" x:Name="progress"></TextBlock>
+
+            <TextBlock VerticalAlignment="Center">Filter:</TextBlock>
+            <TextBox VerticalAlignment="Center" x:Name="filter" TextChanged="Filter_Changed"></TextBox>
         </StackPanel>
         
         <TabControl Grid.Row="1">

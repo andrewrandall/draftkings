@@ -8,8 +8,6 @@ namespace DraftKings
 {
     public class Player
     {
-        private Guid id = Guid.NewGuid();
-
         public string Position { get; set; }
         public string Name { get; set; }
         public string Team { get; set; }
@@ -46,7 +44,11 @@ namespace DraftKings
 
         public override int GetHashCode()
         {
-            return 1877310944 + EqualityComparer<Guid>.Default.GetHashCode(id);
+            var hashCode = -944881940;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Position);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Team);
+            return hashCode;
         }
     }
 }

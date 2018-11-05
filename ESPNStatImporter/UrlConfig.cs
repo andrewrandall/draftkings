@@ -19,8 +19,8 @@ namespace ESPNStatImporter
                 new UrlConfig() { Position = "QB", Week = week, PositionId = 0 },
                 new UrlConfig() { Position = "RB", Week = week, PositionId = 2 },
                 new UrlConfig() { Position = "WR", Week = week, PositionId = 4 },
-                new UrlConfig() { Position = "TE", Week = week, PositionId = 6 },
-                new UrlConfig() { Position = "DST", Week = week, PositionId = 16 }
+                new UrlConfig() { Position = "TE", Week = week, PositionId = 6 }
+                //new UrlConfig() { Position = "DST", Week = week, PositionId = 16 }
             };
     }
 }
