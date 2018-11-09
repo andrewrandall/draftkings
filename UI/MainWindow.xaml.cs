@@ -1,4 +1,4 @@
-﻿using DraftKings.Backup;
+﻿//using DraftKings.Backup;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ namespace DraftKings
         {
             InitializeComponent();
 
-            TryRestoreBackup();
+            //TryRestoreBackup();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -177,68 +177,68 @@ namespace DraftKings
             File.WriteAllText("roster.csv", fileBuilder.ToString());
         }
 
-        private void TryRestoreBackup()
-        {
-            if (File.Exists("bak.json"))
-            {
-                var json = File.ReadAllText("bak.json");
-                var backup = JsonConvert.DeserializeObject<DataBackup>(json);
+        //private void TryRestoreBackup()
+        //{
+        //    if (File.Exists("bak.json"))
+        //    {
+        //        var json = File.ReadAllText("bak.json");
+        //        var backup = JsonConvert.DeserializeObject<DataBackup>(json);
 
-                var players = backup.Players.Select(p => p.FromBackup());
+        //        var players = backup.Players.Select(p => p.FromBackup());
 
-                var byPos = players.GroupBy(p => p.Position);
-                foreach (var group in byPos)
-                {
-                    switch (group.Key)
-                    {
-                        case "QB":
-                            qbGrid.ItemsSource = group.ToArray();
-                            break;
+        //        var byPos = players.GroupBy(p => p.Position);
+        //        foreach (var group in byPos)
+        //        {
+        //            switch (group.Key)
+        //            {
+        //                case "QB":
+        //                    qbGrid.ItemsSource = group.ToArray();
+        //                    break;
 
-                        case "RB":
-                            rbGrid.ItemsSource = group.ToArray();
-                            break;
+        //                case "RB":
+        //                    rbGrid.ItemsSource = group.ToArray();
+        //                    break;
 
-                        case "WR":
-                            wrGrid.ItemsSource = group.ToArray();
-                            break;
+        //                case "WR":
+        //                    wrGrid.ItemsSource = group.ToArray();
+        //                    break;
 
-                        case "TE":
-                            teGrid.ItemsSource = group.ToArray();
-                            break;
+        //                case "TE":
+        //                    teGrid.ItemsSource = group.ToArray();
+        //                    break;
 
-                        case "DST":
-                            dstGrid.ItemsSource = group.ToArray();
-                            break;
-                    }
-                }
+        //                case "DST":
+        //                    dstGrid.ItemsSource = group.ToArray();
+        //                    break;
+        //            }
+        //        }
 
-                var mostPickedPlayers = backup.MostPlayedPlayers.Select(
-                    x =>
-                    new
-                    {
-                        Count = x.PlayedCount,
-                        x.Player,
-                        x.Player.Position,
-                        x.Player.Name,
-                        x.Player.Team,
-                        x.Player.Projection,
-                        x.Player.Salary,
-                        x.Player.Matchup,
-                        PointPerCost = x.Player.Projection / x.Player.Salary
-                    })
-                    .OrderByDescending(x => x.Count)
-                    .ToArray();
+        //        var mostPickedPlayers = backup.MostPlayedPlayers.Select(
+        //            x =>
+        //            new
+        //            {
+        //                Count = x.PlayedCount,
+        //                x.Player,
+        //                x.Player.Position,
+        //                x.Player.Name,
+        //                x.Player.Team,
+        //                x.Player.Projection,
+        //                x.Player.Salary,
+        //                x.Player.Matchup,
+        //                PointPerCost = x.Player.Projection / x.Player.Salary
+        //            })
+        //            .OrderByDescending(x => x.Count)
+        //            .ToArray();
 
-                pickGrid.ItemsSource = mostPickedPlayers;
+        //        pickGrid.ItemsSource = mostPickedPlayers;
 
-                var rosters = backup.TopRosters.Select(r => r.FromBackup()).ToArray();
-                allRosters = rosters.ToArray();
-                items.ItemsSource = rosters.OrderByDescending(r => r.Projection);
-                rosterCount.Text = rosters.Length.ToString();
-                progress.Text = "Restored Backup";
-            }
-        }
+        //        var rosters = backup.TopRosters.Select(r => r.FromBackup()).ToArray();
+        //        allRosters = rosters.ToArray();
+        //        items.ItemsSource = rosters.OrderByDescending(r => r.Projection);
+        //        rosterCount.Text = rosters.Length.ToString();
+        //        progress.Text = "Restored Backup";
+        //    }
+        //}
 
         private void Filter_Changed(object sender, TextChangedEventArgs e)
         {

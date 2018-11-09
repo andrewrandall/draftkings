@@ -23,7 +23,7 @@ namespace DraftKings
             string salaryRes = string.Empty;
             foreach (var res in reses)
             {
-                if (res.Contains("w9"))
+                if (res.Contains("w10"))
                 {
                     if (res.Contains("DKSalaries"))
                     {
@@ -180,9 +180,9 @@ namespace DraftKings
                    .OrderBy(x => x.Distance)
                    .ToArray();
 
-                var best = hits.First();
+                var best = hits.FirstOrDefault();
 
-                if (best.Distance > 5)
+                if (best == null || best.Distance > 5)
                 {
                     unks.Add(line);
                 }
