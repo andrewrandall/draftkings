@@ -1,4 +1,5 @@
 ﻿//using DraftKings.Backup;
+using DraftKings.Backup;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -30,18 +31,15 @@ namespace DraftKings
         {
             InitializeComponent();
 
-            //TryRestoreBackup();
+            TryRestoreBackup();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var players = new Importer().Run();
 
-            //var alreadyPlayed = Enumerable.Empty<String>();
-            //var alreadyPlayed = new[] { "DET", "OAK", "SF", "GB", "NE", "TEN", "DAL" };
-            //var alreadyPlayed = new[] { "MIA", "HOU", };// "NO", "MIN", "BOS", "BUF" };
-            //var alreadyPlayed = new[] { "MIA", "HOU", "NO", "MIN", "BOS", "BUF" };
-            //players = players.Where(p => !alreadyPlayed.Contains(p.Team)).ToArray();
+            var alreadyPlayed = new[] { "CAR", "PIT", "NYG", "SF", "DAL", "PHI" };
+            players = players.Where(p => !alreadyPlayed.Contains(p.Team)).ToArray();
 
             var byPos = players.GroupBy(p => p.Position);
             foreach (var group in byPos)
@@ -70,67 +68,48 @@ namespace DraftKings
                 }
             }
 
-            //var rosters = new List<Roster>();
-            //rosters.Add(new InchBackByEfficiency2().Run(players));
-            //rosters.AddRange(new RosterVarier().Vary(rosters.First(), players));
+            var rosters = new List<Roster>();
+            rosters.Add(new InchBackByEfficiency2().Run(players));
+            rosters.AddRange(new RosterVarier().Vary(rosters.First(), players));
 
-            //mostPickedRosters.ItemsSource = rosters
-            //    .GroupBy(r => r)
-            //    .Select(g => 
-            //        new
-            //        {
-            //            Count = g.Count(),
-            //            Roster = g.Key
-            //        })
-            //    .OrderByDescending(g => g.Count)
-            //    .ToArray();
+            mostPickedRosters.ItemsSource = rosters
+                .GroupBy(r => r)
+                .Select(g =>
+                    new
+                    {
+                        Count = g.Count(),
+                        Roster = g.Key
+                    })
+                .OrderByDescending(g => g.Count)
+                .ToArray();
 
-            //var mostPickedPlayers = rosters.SelectMany(r => r).GroupBy(p => p).Select(g =>
-            //        new
-            //        {
-            //            Count = g.Count(),
-            //            g.Key.Position,
-            //            g.Key.Name,
-            //            g.Key.Team,
-            //            g.Key.Projection,
-            //            g.Key.Salary,
-            //            g.Key.Matchup,
-            //            g.Key.PointPerCost,
-            //            Player = g.Key
-            //        })
-            //        .OrderByDescending(x => x.Count);
+            var mostPickedPlayers = rosters.SelectMany(r => r).GroupBy(p => p).Select(g =>
+                    new
+                    {
+                        Count = g.Count(),
+                        g.Key.Position,
+                        g.Key.Name,
+                        g.Key.Team,
+                        g.Key.Projection,
+                        g.Key.Salary,
+                        g.Key.Matchup,
+                        g.Key.PointPerCost,
+                        Player = g.Key
+                    })
+                    .OrderByDescending(x => x.Count);
 
-            //pickGrid.ItemsSource = mostPickedPlayers;
+            pickGrid.ItemsSource = mostPickedPlayers;
 
             var permutator = new PlayerPermutator();
-            var rosters = new List<Roster>();
 
             Task.Run(() =>
             {
                 permutator.Progress += Permutator_Progress;
-
-                var takes = new Dictionary<string, int>()
-                {
-                    { "QB", 4 },
-                    { "RB", 10 },
-                    { "WR", 15 },
-                    { "TE", 5 },
-                    { "DST", 3 },
-                };
-
-                var playersByPos = players.GroupBy(p => p.Position);
-
-                var playersToPerm = new List<Player>();
-
-                foreach (var group in playersByPos)
-                {
-                    playersToPerm.AddRange(group.OrderByDescending(p => p.Projection).Take(takes[group.Key]));
-                }
-
-                var pr = permutator.Permutations(playersToPerm);
-                rosters.AddRange(pr);
-            }).ContinueWith(_ =>
+                var pr = permutator.Permutations(mostPickedPlayers.Select(p => p.Player).ToArray());
+                return pr;
+            }).ContinueWith(t =>
             {
+                rosters.AddRange(t.Result);
                 var distinctRosters = rosters.Distinct().OrderByDescending(r => r.Projection).ToArray();
 
                 Application.Current.Dispatcher.Invoke(() =>
@@ -141,25 +120,25 @@ namespace DraftKings
                     allRosters = distinctRosters.ToArray();
                 });
 
-                //var backup = new DataBackup
-                //{
-                //    TopRosters = distinctRosters.Select(
-                //        r =>
-                //        new RosterBackup()
-                //        {
-                //            Players = r.Select(p => p.ToBackup())
-                //        }),
-                //    MostPlayedPlayers = mostPickedPlayers.Select(
-                //        x =>
-                //        new MostPlayedPlayerBackup
-                //        {
-                //            PlayedCount = x.Count,
-                //            Player = x.Player.ToBackup()
-                //        }),
-                //    Players = players.Select(p => p.ToBackup())
-                //};
-                //var json = JsonConvert.SerializeObject(backup);
-                //File.WriteAllText("bak.json", json);
+                var backup = new DataBackup
+                {
+                    TopRosters = distinctRosters.Select(
+                        r =>
+                        new RosterBackup()
+                        {
+                            Players = r.Select(p => p.ToBackup())
+                        }),
+                    MostPlayedPlayers = mostPickedPlayers.Select(
+                        x =>
+                        new MostPlayedPlayerBackup
+                        {
+                            PlayedCount = x.Count,
+                            Player = x.Player.ToBackup()
+                        }),
+                    Players = players.Select(p => p.ToBackup())
+                };
+                var json = JsonConvert.SerializeObject(backup);
+                File.WriteAllText("bak.json", json);
             });
         }
 
@@ -177,68 +156,68 @@ namespace DraftKings
             File.WriteAllText("roster.csv", fileBuilder.ToString());
         }
 
-        //private void TryRestoreBackup()
-        //{
-        //    if (File.Exists("bak.json"))
-        //    {
-        //        var json = File.ReadAllText("bak.json");
-        //        var backup = JsonConvert.DeserializeObject<DataBackup>(json);
+        private void TryRestoreBackup()
+        {
+            if (File.Exists("bak.json"))
+            {
+                var json = File.ReadAllText("bak.json");
+                var backup = JsonConvert.DeserializeObject<DataBackup>(json);
 
-        //        var players = backup.Players.Select(p => p.FromBackup());
+                var players = backup.Players.Select(p => p.FromBackup());
 
-        //        var byPos = players.GroupBy(p => p.Position);
-        //        foreach (var group in byPos)
-        //        {
-        //            switch (group.Key)
-        //            {
-        //                case "QB":
-        //                    qbGrid.ItemsSource = group.ToArray();
-        //                    break;
+                var byPos = players.GroupBy(p => p.Position);
+                foreach (var group in byPos)
+                {
+                    switch (group.Key)
+                    {
+                        case "QB":
+                            qbGrid.ItemsSource = group.ToArray();
+                            break;
 
-        //                case "RB":
-        //                    rbGrid.ItemsSource = group.ToArray();
-        //                    break;
+                        case "RB":
+                            rbGrid.ItemsSource = group.ToArray();
+                            break;
 
-        //                case "WR":
-        //                    wrGrid.ItemsSource = group.ToArray();
-        //                    break;
+                        case "WR":
+                            wrGrid.ItemsSource = group.ToArray();
+                            break;
 
-        //                case "TE":
-        //                    teGrid.ItemsSource = group.ToArray();
-        //                    break;
+                        case "TE":
+                            teGrid.ItemsSource = group.ToArray();
+                            break;
 
-        //                case "DST":
-        //                    dstGrid.ItemsSource = group.ToArray();
-        //                    break;
-        //            }
-        //        }
+                        case "DST":
+                            dstGrid.ItemsSource = group.ToArray();
+                            break;
+                    }
+                }
 
-        //        var mostPickedPlayers = backup.MostPlayedPlayers.Select(
-        //            x =>
-        //            new
-        //            {
-        //                Count = x.PlayedCount,
-        //                x.Player,
-        //                x.Player.Position,
-        //                x.Player.Name,
-        //                x.Player.Team,
-        //                x.Player.Projection,
-        //                x.Player.Salary,
-        //                x.Player.Matchup,
-        //                PointPerCost = x.Player.Projection / x.Player.Salary
-        //            })
-        //            .OrderByDescending(x => x.Count)
-        //            .ToArray();
+                var mostPickedPlayers = backup.MostPlayedPlayers.Select(
+                    x =>
+                    new
+                    {
+                        Count = x.PlayedCount,
+                        x.Player,
+                        x.Player.Position,
+                        x.Player.Name,
+                        x.Player.Team,
+                        x.Player.Projection,
+                        x.Player.Salary,
+                        x.Player.Matchup,
+                        PointPerCost = x.Player.Projection / x.Player.Salary
+                    })
+                    .OrderByDescending(x => x.Count)
+                    .ToArray();
 
-        //        pickGrid.ItemsSource = mostPickedPlayers;
+                pickGrid.ItemsSource = mostPickedPlayers;
 
-        //        var rosters = backup.TopRosters.Select(r => r.FromBackup()).ToArray();
-        //        allRosters = rosters.ToArray();
-        //        items.ItemsSource = rosters.OrderByDescending(r => r.Projection);
-        //        rosterCount.Text = rosters.Length.ToString();
-        //        progress.Text = "Restored Backup";
-        //    }
-        //}
+                var rosters = backup.TopRosters.Select(r => r.FromBackup()).ToArray();
+                allRosters = rosters.ToArray();
+                items.ItemsSource = rosters.OrderByDescending(r => r.Projection);
+                rosterCount.Text = rosters.Length.ToString();
+                progress.Text = "Restored Backup";
+            }
+        }
 
         private void Filter_Changed(object sender, TextChangedEventArgs e)
         {

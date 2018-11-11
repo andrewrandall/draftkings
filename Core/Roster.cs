@@ -51,6 +51,8 @@ namespace DraftKings
                 throw new ArgumentException("player");
 
             players.Add(player);
+            Salary += player.Salary;
+            Projection += player.Projection;
 
             switch (player.Position)
             {
@@ -110,21 +112,9 @@ namespace DraftKings
             RecalcHashCode();
         }
 
-        public double Salary
-        {
-            get
-            {
-                return players.Sum(p => p.Salary);
-            }
-        }
+        public double Salary { get; private set; }
 
-        public double Projection
-        {
-            get
-            {
-                return players.Sum(p => p.Projection);
-            }
-        }
+        public double Projection { get; private set; }
 
         public double AveragePpg
         {
@@ -145,6 +135,8 @@ namespace DraftKings
         public void Remove(Player player)
         {
             players.Remove(player);
+            Salary -= player.Salary;
+            Projection -= player.Projection;
 
             switch (player.Position)
             {
@@ -227,7 +219,9 @@ namespace DraftKings
                 wr3 = wr3,
                 te = te,
                 flex = flex,
-                dst = dst
+                dst = dst,
+                Projection = Projection,
+                Salary = Salary
             };
         }
 

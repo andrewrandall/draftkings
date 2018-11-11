@@ -33,45 +33,49 @@ namespace DraftKings
                         }
                     });
 
-            var flexes = byPos["RB"].Concat(byPos["WR"]).Concat(byPos["TE"]).ToArray();
+            var flexes = byPos["RB"].Concat(byPos["WR"]).ToArray();
 
             var rosters = new ConcurrentDictionary<Roster, byte>();
             int limit = 20;
             Roster lowest = new Roster();
 
-            //int stop = 10000;
             double index = 0;
-            double count = flexes.Length * byPos["QB"].Length * byPos["TE"].Length * byPos["DST"].Length * byPos["RB"].Length * byPos["RB"].Length * byPos["WR"].Length * byPos["WR"].Length * byPos["WR"].Length;
+            double count = flexes.Length 
+                * byPos["QB"].Length 
+                * byPos["TE"].Length 
+                * byPos["DST"].Length 
+                * (byPos["RB"].Length - 1)
+                * (byPos["RB"].Length - 1)
+                * (byPos["WR"].Length - 2)
+                * (byPos["WR"].Length - 2)
+                * (byPos["WR"].Length - 2);
 
-            foreach (var qb in byPos["QB"])
+            Parallel.ForEach(flexes, new ParallelOptions { MaxDegreeOfParallelism = 7 }, flex =>
             {
-                foreach (var te in byPos["TE"].ToArray())
+                foreach (var qb in byPos["QB"])
                 {
-                    Parallel.ForEach(flexes, new ParallelOptions { MaxDegreeOfParallelism = 7 }, flex =>
+                    foreach (var te in byPos["TE"])
                     {
                         foreach (var dst in byPos["DST"])
                         {
-                            var rbs = byPos["RB"].ToArray();
-                            var wrs = byPos["WR"].ToArray();
-                            for (int iRb1 = 0; iRb1 < rbs.Length; iRb1++)
+                            var rbs = byPos["RB"];
+                            var wrs = byPos["WR"];
+                            for (int iRb1 = 0; iRb1 < rbs.Length - 1; iRb1++)
                             {
-                                for (int iRb2 = 0; iRb2 < rbs.Length; iRb2++)
+                                for (int iRb2 = 1; iRb2 < rbs.Length; iRb2++)
                                 {
-                                    for (int iWr1 = 0; iWr1 < wrs.Length; iWr1++)
+                                    for (int iWr1 = 0; iWr1 < wrs.Length - 2; iWr1++)
                                     {
-                                        for (int iWr2 = 0; iWr2 < wrs.Length; iWr2++)
+                                        for (int iWr2 = 1; iWr2 < wrs.Length - 1; iWr2++)
                                         {
-                                            for (int iWr3 = 0; iWr3 < wrs.Length; iWr3++)
+                                            for (int iWr3 = 2; iWr3 < wrs.Length; iWr3++)
                                             {
                                                 ++index;
 
-                                                if (Progress != null && index % 100000 == 0)
+                                                if (Progress != null && index % 100000d == 0)
                                                 {
                                                     Progress(this, index / count);
                                                 }
-
-                                                //if (index > stop)
-                                                //    return rosters;
 
                                                 var dupeChecker = new HashSet<Player>();
                                                 dupeChecker.Add(flex);
@@ -80,8 +84,7 @@ namespace DraftKings
                                                     !dupeChecker.Add(rbs[iRb2]) ||
                                                     !dupeChecker.Add(wrs[iWr1]) ||
                                                     !dupeChecker.Add(wrs[iWr2]) ||
-                                                    !dupeChecker.Add(wrs[iWr3]) ||
-                                                    !dupeChecker.Add(te))
+                                                    !dupeChecker.Add(wrs[iWr3]))
                                                 {
                                                     continue;
                                                 }
@@ -102,8 +105,10 @@ namespace DraftKings
 
                                                 if (rosters.Count < limit)
                                                 {
-                                                    rosters.TryAdd(roster, 0);
-                                                    lowest = rosters.Keys.OrderBy(r => r.Projection).First();
+                                                    if (rosters.TryAdd(roster, 0))
+                                                    {
+                                                        lowest = rosters.Keys.OrderBy(r => r.Projection).First();
+                                                    }
                                                 }
                                                 else if (roster.Projection > lowest.Projection)
                                                 {
@@ -120,9 +125,9 @@ namespace DraftKings
                                 }
                             }
                         }
-                    });
+                    }
                 }
-            }
+            });
 
             return rosters.Keys;
         }

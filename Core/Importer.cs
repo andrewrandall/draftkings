@@ -14,6 +14,38 @@ namespace DraftKings
         private List<Player> players;
         private List<string> unks;
 
+        private Dictionary<string, string> dstMap = new Dictionary<string, string>
+        {
+            { "Philadelphia Eagles", "PHI" },
+            { "Kansas City Chiefs", "KC" },
+            { "New York Jets", "NYJ" },
+            { "Los Angeles Chargers", "LAC" },
+            { "Washington Redskins", "WAS" },
+            { "Chicago Bears", "CHI" },
+            { "Los Angeles Rams", "LAR" },
+            { "Atlanta Falcons", "ATL" },
+            { "Green Bay Packers", "GB" },
+            { "Indianapolis Colts", "IND" },
+            { "New England Patriots", "NE" },
+            { "Dallas Cowboys", "DAL" },
+            { "New York Giants", "NYG" },
+            { "Carolina Panthers", "CAR" },
+            { "New Orleans Saints", "NO" },
+            { "Detroit Lions", "DET" },
+            { "San Francisco 49ers", "SF" },
+            { "Jacksonville Jaguars", "JAC" },
+            { "Pittsburgh Steelers", "PIT" },
+            { "Seattle Seahawks", "SEA" },
+            { "Cleveland Browns", "CLE" },
+            { "Buffalo Bills", "BUF" },
+            { "Miami Dolphins", "MIA" },
+            { "Tennessee Titans", "TEN" },
+            { "Tampa Bay Buccaneers", "TB" },
+            { "Arizona Cardinals", "ARI" },
+            { "Cincinnati Bengals", "CIN" },
+            { "Oakland Raiders", "OAK" }
+        };
+
         public IEnumerable<Player> Run()
         {
             players = new List<Player>();
@@ -125,6 +157,7 @@ namespace DraftKings
             {
                 case "DST":
                     player.Position = "DST";
+                    player.Team = dstMap[parts[0]];
                     break;
 
                 case "QB":
