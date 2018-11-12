@@ -54,7 +54,7 @@ namespace DraftKings.ESPN
                     {
                         continue;
                     }
-                    yield return new PlayerScore(new Player { Name = $"MISS - {result.Name}", Team = team }, result);
+                    //yield return new PlayerScore(new Player { Name = $"MISS - {result.Name}", Team = team }, result);
                 }
                 else
                 {

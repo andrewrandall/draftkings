@@ -1,6 +1,11 @@
-% of High Score Weeks
+% of High Score Weeks as a stat
 Correlation Tests
+	https://www.dummies.com/education/math/statistics/how-to-calculate-a-correlation/
+	Game time
 Multi-entry
 Std Deviation
 Confirm Team Mappings. Missing players!
 Team object wrapping up all the mapping troubles
+Weeks with lots of targets
+Showdown builder
+	defensive players

@@ -165,7 +165,42 @@ namespace DraftKings
             var results = new ESPN.Importer().Run(players, alreadyPlayed).ToArray();
             resultsGrid.ItemsSource = results;
             var avgDiff = results.Sum(r => r.Difference) / results.Length;
-            resultsInfo.Text = $"Avg Diff: {avgDiff}";
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"Avg Diff: {avgDiff}");
+
+            var resByPos = results.GroupBy(r => r.Position)
+                .Select(g => new
+                {
+                    Position = g.Key,
+                    AvgDiff = g.Sum(p => p.Difference) / g.Count(),
+                    AvgDiffVsAvg = g.Sum(p => p.DifferenceVsSeason) / g.Count()
+                });
+
+            foreach (var x in resByPos)
+            {
+                sb.AppendLine($"Avg Diff at {x.Position} = {x.AvgDiff}");
+            }
+
+            var resByPos2 = results.GroupBy(r => r.Position)
+                .Select(g => new
+                {
+                    Position = g.Key,
+                    Count = (double)g.Count(),
+                    Group = g.OrderByDescending(p => p.Score).ToArray()
+                })
+                .Select(x => new
+                {
+                    Position = x.Position,
+                    TopAvg = x.Group.Select(z => z.Score).Take((int)Math.Ceiling(x.Count * .25d)).Average()
+                });
+
+            foreach (var x in resByPos2)
+            {
+                sb.AppendLine($"Top 25% Avg at {x.Position} = {x.TopAvg}");
+            }
+
+            resultsInfo.Text = sb.ToString();
         }
 
         private void RosterizeButton_Click(object sender, RoutedEventArgs e)

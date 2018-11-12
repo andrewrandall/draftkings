@@ -19,10 +19,13 @@ namespace DraftKings.ESPN
 
         public string Name => player.Name;
         public string Team => player.Team;
+        public string Position => player.Position;
         public double Score => CalcScore(result);
         public double Projection => player.Projection;
+        public double SeasonAvg => player.AveragePpg;
         public double Salary => player.Salary;
         public double Difference => CalcScore(result) - Projection;
+        public double DifferenceVsSeason => CalcScore(result) - player.AveragePpg;
 
         public static double CalcScore(PlayerResult result)
         {
