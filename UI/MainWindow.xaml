@@ -17,7 +17,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <Button VerticalAlignment="Center" Click="Button_Click" Content="run" Margin="10" />
+            <Button VerticalAlignment="Center" Click="ImportButton_Click" Content="import" Margin="10" />
+            <Button VerticalAlignment="Center" Click="RosterizeButton_Click" Content="rosterize" Margin="10" />
             <TextBlock VerticalAlignment="Center">Rosters: </TextBlock>
             <TextBlock VerticalAlignment="Center" x:Name="rosterCount" />
             <TextBlock VerticalAlignment="Center">Progress:</TextBlock>
@@ -97,6 +98,16 @@
             </TabItem>
             <TabItem Header="Most Picked Players">
                 <DataGrid x:Name="pickGrid" />
+            </TabItem>
+            <TabItem Header="Results">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="resultsInfo" />
+                    <DataGrid x:Name="resultsGrid" Grid.Row="1" />
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

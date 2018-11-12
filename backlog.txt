@@ -1,0 +1,6 @@
+% of High Score Weeks
+Correlation Tests
+Multi-entry
+Std Deviation
+Confirm Team Mappings. Missing players!
+Team object wrapping up all the mapping troubles

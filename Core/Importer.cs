@@ -46,6 +46,11 @@ namespace DraftKings
             { "Oakland Raiders", "OAK" }
         };
 
+        private Dictionary<string, string> fantasyProTeamMap = new Dictionary<string, string>
+        {
+            { "JAC", "JAX" }
+        };
+
         public IEnumerable<Player> Run()
         {
             players = new List<Player>();
@@ -103,7 +108,7 @@ namespace DraftKings
             {
                 Name = parts[0],
                 Projection = double.Parse(parts.Last()),
-                Team = parts[1]
+                Team = MapToDKTeam(parts[1])
             };
             players.Add(player);
 
@@ -215,7 +220,7 @@ namespace DraftKings
 
                 var best = hits.FirstOrDefault();
 
-                if (best == null || best.Distance > 5)
+                if (best == null || best.Distance > 4)
                 {
                     unks.Add(line);
                 }
@@ -227,42 +232,15 @@ namespace DraftKings
                     hits[0].Player.AveragePpg = averagePpg;
                 }
             }
+        }
 
-            //if (hits.First().Distance > 3)
-            //{
-            //    var player = new Player
-            //    {
-            //        Name = "UNK",
-            //        Position = "UNK",
-            //        Projection = 0.0,
-            //        Team = "UNK",
-            //        Salary = 0.0
-            //    };
-            //    unks.Add(line);
-            //}
-
-            //var hits = players.Where(p => (p.Name.Contains(name) || name.Contains(p.Name)) && p.Position == pos).ToArray();
-            //if (hits.Length == 1)
-            //{
-            //    hits[0].Salary = salary;
-            //}
-            //else if (hits.Length == 0)
-            //{
-            //    var player = new Player
-            //    {
-            //        Name = "UNK",
-            //        Position = "UNK",
-            //        Projection = 0.0,
-            //        Team = "UNK",
-            //        Salary = 0.0
-            //    };
-            //    players.Add(player);
-            //    unks.Add(Tuple.Create(line, player));
-            //}
-            //else
-            //{
-            //    throw new Exception("Ambiguous match");
-            //}
+        private string MapToDKTeam(string team)
+        {
+            if (fantasyProTeamMap.TryGetValue(team.ToUpper(), out string hit))
+            {
+                return hit;
+            }
+            return team;
         }
     }
 }
